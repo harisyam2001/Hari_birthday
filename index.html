@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday Meera ji 🎉</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+      font-family: "Comic Sans MS", cursive;
+    }
+    button {
+      transition: 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    const images = [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80"
+    ];
+
+    function Confetti() {
+      return (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+          pointerEvents: "none", zIndex: 1000, fontSize: "2.5rem", textAlign: "center"
+        }}>
+          {Array.from({length: 50}).map((_,i) => (
+            <span key={i}
+              style={{
+                position: "absolute",
+                left: `${Math.random()*100}%`,
+                top: `${Math.random()*100}%`,
+                animation: `fall 3s linear ${Math.random()*2}s infinite`
+              }}
+            >🎉</span>
+          ))}
+          <style>{`
+            @keyframes fall {
+              0% { transform: translateY(-100px) rotate(0deg);}
+              100% { transform: translateY(100vh) rotate(360deg);}
+            }
+          `}</style>
+        </div>
+      );
+    }
+
+    function QuizGame({onFinish}) {
+      const questions = [
+        { q: "What is Meera ji's favorite color?", options: ["Blue", "Pink", "Green", "Yellow"], answer: "Pink" },
+        { q: "Which city would Meera ji love to visit?", options: ["Paris", "Tokyo", "New York", "London"], answer: "Paris" },
+        { q: "Meera ji's favorite dessert?", options: ["Ice Cream", "Cake", "Gulab Jamun", "Chocolate"], answer: "Cake" }
+      ];
+      const [step, setStep] = React.useState(0);
+      const [score, setScore] = React.useState(0);
+
+      function handleOption(opt) {
+        if (opt === questions[step].answer) setScore(score+1);
+        if (step < questions.length-1) setStep(step+1);
+        else onFinish(score + (opt === questions[step].answer ? 1 : 0));
+      }
+
+      return (
+        <div style={{padding: 20, textAlign: "center"}}>
+          <h2>🎲 Birthday Quiz 🎲</h2>
+          <p>{questions[step].q}</p>
+          {questions[step].options.map(opt => (
+            <button key={opt} onClick={() => handleOption(opt)}
+              style={{ margin: 8, padding: "10px 20px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", cursor: "pointer" }}
+            >{opt}</button>
+          ))}
+          <div style={{marginTop: 20}}>
+            <span>Question {step+1} of {questions.length}</span>
+          </div>
+        </div>
+      );
+    }
+
+    function PuzzleGame({onFinish}) {
+      const correctOrder = ["🎂", "🎈", "🎁", "🎉"];
+      const [order, setOrder] = React.useState(shuffle([...correctOrder]));
+      const [dragIdx, setDragIdx] = React.useState(null);
+
+      function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+      function onDragStart(idx) { setDragIdx(idx); }
+      function onDrop(idx) {
+        if (dragIdx === null) return;
+        const newOrder = [...order];
+        const [removed] = newOrder.splice(dragIdx, 1);
+        newOrder.splice(idx, 0, removed);
+        setOrder(newOrder);
+        setDragIdx(null);
+      }
+      function checkWin() {
+        return JSON.stringify(order) === JSON.stringify(correctOrder);
+      }
+
+      return (
+        <div style={{padding: 20, textAlign: "center"}}>
+          <h2>🧩 Birthday Puzzle 🧩</h2>
+          <p>Arrange the emojis in the correct birthday order!</p>
+          <div style={{display: "flex", justifyContent: "center", gap: 16, margin: 20}}>
+            {order.map((emj, idx) => (
+              <div key={emj+idx} draggable onDragStart={() => onDragStart(idx)} onDragOver={e => e.preventDefault()} onDrop={() => onDrop(idx)}
+                style={{ fontSize: "2.5rem", padding: 16, border: "2px dashed #f48fb1", borderRadius: 12, background: "#fff", cursor: "grab" }}
+              >{emj}</div>
+            ))}
+          </div>
+          <button onClick={() => checkWin() && onFinish()}
+            style={{ marginTop: 20, padding: "10px 30px", borderRadius: 8, background: "#f06292", color: "#fff", border: "none", fontWeight: "bold", fontSize: "1.1rem" }}
+            disabled={!checkWin()}
+          >{checkWin() ? "Yay! Next Game" : "Arrange Correctly"}</button>
+        </div>
+      );
+    }
+
+    function PhotoGallery() {
+      return (
+        <div style={{padding: 20, textAlign: "center"}}>
+          <h2>📸 Our Memories</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+            {images.map((src, i) => (
+              <img key={i} src={src} alt={`Memory ${i+1}`}
+                style={{ width: 180, height: 180, objectFit: "cover", borderRadius: 16, boxShadow: "0 2px 12px #f8bbd0" }}
+              />
+            ))}
+          </div>
+          <p style={{marginTop: 20, color: "#ad1457"}}>Add more photos for more memories! 💖</p>
+        </div>
+      );
+    }
+
+    function BirthdayAnimation() {
+      return (
+        <div style={{ position: "relative", width: "100%", height: 300, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <Confetti />
+          <div style={{fontSize: "4rem", marginBottom: 20}}>🎂</div>
+          <h1 style={{ color: "#ec407a", fontSize: "2.5rem", textShadow: "2px 2px 8px #fff" }}>Happy Birthday Meera ji!</h1>
+          <p style={{fontSize: "1.2rem", color: "#6d4c41", marginTop: 10}}>Wishing you a day filled with love, laughter, and cake! 🎉</p>
+        </div>
+      );
+    }
+
+    function App() {
+      const [page, setPage] = React.useState("welcome");
+      const [quizScore, setQuizScore] = React.useState(null);
+
+      function getFunnyMessage() {
+        const msgs = [
+          "You are officially 1 year awesomer! 🎈",
+          "Warning: Too much cuteness detected! 💖",
+          "Cake calories don't count today! 🍰",
+          "You are the queen of my heart! 👑",
+          "May your day be as fabulous as you are! 😘"
+        ];
+        return msgs[Math.floor(Math.random()*msgs.length)];
+      }
+
+      return (
+        <div style={{ minHeight: "100vh" }}>
+          {page === "welcome" && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+              <div style={{ fontSize: "3rem", marginBottom: 30, color: "#ad1457", textShadow: "2px 2px 8px #fff" }}>🎁</div>
+              <button onClick={() => setPage("birthday")}
+                style={{ padding: "20px 60px", fontSize: "1.5rem", borderRadius: 20, background: "linear-gradient(90deg, #f06292, #f8bbd0)", color: "#fff", border: "none", boxShadow: "0 4px 16px #f8bbd0", cursor: "pointer", fontWeight: "bold" }}
+              >Open</button>
+            </div>
+          )}
+          {page === "birthday" && (
+            <div style={{padding: 30, textAlign: "center"}}>
+              <BirthdayAnimation />
+              <button onClick={() => setPage("quiz")}
+                style={{ marginTop: 40, padding: "12px 40px", borderRadius: 12, background: "#f06292", color: "#fff", border: "none", fontWeight: "bold", fontSize: "1.2rem" }}
+              >Let's Play a Game!</button>
+            </div>
+          )}
+          {page === "quiz" && <QuizGame onFinish={score => { setQuizScore(score); setPage("puzzle"); }} />}
+          {page === "puzzle" && <PuzzleGame onFinish={() => setPage("gallery")} />}
+          {page === "gallery" && (
+            <div>
+              <div style={{padding: 30, textAlign: "center"}}>
+                <h2 style={{color: "#ad1457"}}>Congratulations! 🎉</h2>
+                <p style={{fontSize: "1.2rem"}}>You scored {quizScore} in the quiz!</p>
+                <p style={{fontSize: "1.1rem", color: "#6d4c41"}}>{getFunnyMessage()}</p>
+              </div>
+              <PhotoGallery />
+              <div style={{textAlign: "center", margin: 30}}>
+                <button onClick={() => setPage("birthday")}
+                  style={{ padding: "10px 30px", borderRadius: 10, background: "#f06292", color: "#fff", border: "none", fontWeight: "bold", fontSize: "1.1rem" }}
+                >Back to Birthday</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById(\"root\")).render(<App />);
+
+  </script>
+</body>
+</html>
